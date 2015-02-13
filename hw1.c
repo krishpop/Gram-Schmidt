@@ -9,12 +9,11 @@
 #include <stdlib.h>
 #include <math.h>
 
+void inv_double_gs(double *a, int n, double *u, double *b);
 void transpose(double *matrix, double **transposed_matrix, int n);
 void multiply(double *m1, double *m2, double **new_matrix, int n);
 double *projection(double *m1, double *m2, int v1, int v2, int n);
-// v1 and v2 are columns for vectors in (n*n) matrices m1 and m2
 double dot_product(double *m1, double *m2, int v1, int v2, int n);
-// v is the column of a vector in (n*n) matrix a
 void normalize(double *m, int v, int n);
 double vector_magn(double *m, int v, int n);
 void print_matrix(double *m, int rows, int columns);
@@ -45,7 +44,6 @@ void transpose(double *a, double **transposed_matrix, int n) {
     for (row=0; row < n; row++) {
         for (column=0; column < n; column++) {
             (*transposed_matrix)[row*n+column] = a[column*n+row]; 
-            // swap row,col with col,row values
             (*transposed_matrix)[column*n+row] = a[row*n+column];
         }
     }
