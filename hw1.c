@@ -11,17 +11,17 @@
 
 void transpose(double *matrix, double **transposed_matrix, int n);
 void multiply(double *m1, double *m2, double **new_matrix, int n);
-void projection(double *m1, double *m2, double **proj, int v1, int v2, int n);
+double *projection(double *m1, double *m2, int v1, int v2, int n);
 // v1 and v2 are columns for vectors in (n*n) matrices m1 and m2
 double dot_product(double *m1, double *m2, int v1, int v2, int n);
 // v is the column of a vector in (n*n) matrix a
-void normalize(double *m, double **out_v, int v, int n);
+void normalize(double *m, int v, int n);
 double vector_magn(double *m, int v, int n);
 void print_matrix(double *m, int rows, int columns);
 void identity_matrix(double** m, int n);
 
-void inv_double_gs(double ∗a, int n, double ∗ u, double ∗ b) {
-    u = (double)malloc(sizeof(double)*n*n);
+void inv_double_gs(double *a, int n, double *u, double *b) {
+    u = (double*)malloc(sizeof(double)*n*n);
     int v_i, u_j;
     for (v_i=0; v_i<n; v_i++) {
         int row;
@@ -35,6 +35,7 @@ void inv_double_gs(double ∗a, int n, double ∗ u, double ∗ b) {
         }
         normalize(u, v_i, n);
     }
+    print_matrix(u, n, n);
 }
 
 void transpose(double *a, double **transposed_matrix, int n) {
@@ -55,7 +56,7 @@ double *projection(double *a, double *u, int v_i, int u_j, int n) {
     int row;
     double *proj = malloc(sizeof(double)*n);
     for (row=0; row<n; row++) {
-        (*proj)[row] = u[row*n+u_j]*dpsum;
+        proj[row] = u[row*n+u_j]*dpsum;
     }
     return proj;
 }
@@ -111,27 +112,12 @@ void identity_matrix(double **m, int n) {
 int main() {
     int n = 3;
     double *matrix1 = malloc(sizeof(double)*n*n);
-    double *matrix2 = calloc(sizeof(double), n*n);
+    double *u, *b;
     int i, j;
     for (i=0; i<(n*n); i++) {
         matrix1[i] = i;
     }
-    int row;
-    for (row=0; row<n; row++) {
-        matrix2[row*n] = matrix1[row*n];
-    }
-    normalize(matrix2, 0, n);
-    print_matrix(matrix2, n, n);
-    double *projected_v = projection(matrix1, matrix2, 1, 0, n);
-    print_matrix(projected_v, n, 1);
-    double *newmatrix;
-    multiply(matrix1, matrix2, &newmatrix, n);
-    double dpsum = dot_product(matrix1, matrix2, 0, 0, n);
-    printf("dimsum: %f\n", dpsum);
-    print_matrix(newmatrix, n, n);
-    double *idmat;
-    identity_matrix(&idmat, 6);
-    print_matrix(idmat, 6, 6);
+    inv_double_gs(matrix1, n, u, b);    
     return 0;
 }
 
