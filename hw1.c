@@ -27,10 +27,19 @@ void inv_double_gs(double *a, int n, double *u, double *b) {
         for (row=0; row<n; row++) {
             u[row*n+v_i]=a[row*n+v_i];
         }
+        int double_gs = 0;
+        double *a_gs = a;
         for (u_j=v_i-1; u_j>=0; u_j--) {
-            double *proj_uv = projection(a, u, v_i, u_j, n);
-            for (row=0; row<n; row++) { u[row*n+v_i]-=proj_uv[row]; }
+            double *proj_uv = projection(a_gs, u, v_i, u_j, n);
+            for (row=0; row<n; row++) {
+                u[row*n+v_i]-=proj_uv[row]; 
+            }
             free(proj_uv);
+            if (u_j == 0 && double_gs == 0) {
+                u_j = v_i-1;
+                a_gs = u;
+                double_gs = 1;
+            }
         }
         normalize(u, v_i, n);
     }
@@ -109,13 +118,15 @@ void identity_matrix(double **m, int n) {
 
 int main() {
     int n = 3;
-    double *matrix1 = malloc(sizeof(double)*n*n);
+    double *a = malloc(sizeof(double)*n*n);
     double *u, *b;
     int i, j;
-    for (i=0; i<(n*n); i++) {
-        matrix1[i] = i;
-    }
-    inv_double_gs(matrix1, n, u, b);    
+    a[0] = a[6] = a[1] = a[7] = a[2] = a[5] = 1;
+    a[3] = -1;
+    a[4] = 0;
+    a[8] = 2;
+    print_matrix(a, n, n);
+    inv_double_gs(a, n, u, b);    
     return 0;
 }
 
