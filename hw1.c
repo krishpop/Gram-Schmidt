@@ -27,9 +27,6 @@ void inv_double_gs(double *a, int n, double *u, double *b) {
     double *transp_u;
     transpose(u, &transp_u, n);
     multiply(g, transp_u, &b, n);
-    double *id = malloc(sizeof(double)*n*n);
-    multiply(a, b, &id, n);
-    print_matrix(id, n, n);
 }
 
 void double_gs(double *a, int n, double *u, double *g) {
@@ -143,3 +140,18 @@ void print_matrix(double *m, int rows, int columns){
     printf("\n");
 }
 
+int main() {
+    double *a, *b, *u;
+    int n = 2;
+    a = (double*)malloc(sizeof(double)*n*n);
+    b = (double*)malloc(sizeof(double)*n*n);
+    u = (double*)malloc(sizeof(double)*n*n);
+    a[0] = 1;
+    a[1] = 1;
+    a[2] = 0;
+    a[3] = 4;
+    print_matrix(a, n, n);
+    inv_double_gs(a, n, u, b);
+    print_matrix(b, n, n);
+    return 0;
+}
