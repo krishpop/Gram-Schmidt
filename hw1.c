@@ -56,7 +56,7 @@ void double_gs(double *a, int n, double *u, double *g) {
                 double_gs = 1;
             }
         }
-        // normalize the vector in g according to magnitude of a
+        // normalize the vector in g according to magnitude of u_v
         double v_mag = vector_magn(u, v_i, n);
         for (row=0; row<n; row++) {
             g[row*n+v_i] = g[row*n+v_i] / v_mag;
@@ -130,32 +130,6 @@ void identity_matrix(double **m, int n) {
     for (i=0; i<n; i++) {
         (*m)[i*n+i] = (double)1;
     }
-}
-
-int main() {
-    int n = 4;
-    double *a = malloc(sizeof(double)*n*n);
-    double *u, *b;
-    u = malloc(sizeof(double)*n*n);
-    b = malloc(sizeof(double)*n*n);
-    a[0] = 2.0;
-    a[1] = 2.0;
-    a[2] = 3.0;
-    a[3] = 4.0;
-    a[4] = 5.0;
-    a[5] = 6.0;
-    a[6] = 7.0;
-    a[7] = 8.0;
-    a[8] = 9.0;
-    a[9] = 0.0;
-    a[10] = 10.0;
-    a[11] = 2.0;
-    a[12] = 13.0;
-    a[13] = 3.0;
-    a[14] = 5.0;
-    a[15] = 2.0;
-    inv_double_gs(a, n, u, b);    
-    return 0;
 }
 
 void print_matrix(double *m, int rows, int columns){
