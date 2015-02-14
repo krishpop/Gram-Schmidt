@@ -10,40 +10,59 @@
 #include <math.h>
 
 void inv_double_gs(double *a, int n, double *u, double *b);
+void double_gs(double *a, int n, double *u, double *g);
 void transpose(double *matrix, double **transposed_matrix, int n);
 void multiply(double *m1, double *m2, double **new_matrix, int n);
-double *projection(double *m1, double *m2, int v1, int v2, int n);
+double *projection(double dp, double *m1, double *m2, int v1, int v2, int n);
 double dot_product(double *m1, double *m2, int v1, int v2, int n);
-void normalize(double *m, int v, int n);
+void normalize(double v_mag, double *m, int v, int n);
 double vector_magn(double *m, int v, int n);
 void print_matrix(double *m, int rows, int columns);
 void identity_matrix(double** m, int n);
 
 void inv_double_gs(double *a, int n, double *u, double *b) {
-    u = (double*)malloc(sizeof(double)*n*n);
-    int v_i, u_j;
+    double *g;
+    identity_matrix(&g, n);
+    double_gs(a, n, u, g);
+    double *transp_u;
+    transpose(u, &transp_u, n);
+    multiply(g, transp_u, &b, n);
+    double *id = malloc(sizeof(double)*n*n);
+    multiply(a, b, &id, n);
+    print_matrix(id, n, n);
+}
+
+void double_gs(double *a, int n, double *u, double *g) {
+    int v_i, u_j, row, double_gs;
+    double *v_matrix, *proj_uv, *proj_ui;
+    double dp;
     for (v_i=0; v_i<n; v_i++) {
-        int row;
         for (row=0; row<n; row++) {
             u[row*n+v_i]=a[row*n+v_i];
         }
-        int double_gs = 0;
-        double *a_gs = a;
+        double_gs = 0;
+        v_matrix = a;
         for (u_j=v_i-1; u_j>=0; u_j--) {
-            double *proj_uv = projection(a_gs, u, v_i, u_j, n);
+            dp = dot_product(v_matrix, u, v_i, u_j, n);
+            proj_uv = projection(dp, v_matrix, u, v_i, u_j, n);
             for (row=0; row<n; row++) {
-                u[row*n+v_i]-=proj_uv[row]; 
+                u[row*n+v_i] = u[row*n+v_i] - proj_uv[row];
+                g[row*n+v_i] = g[row*n+v_i] - dp*g[row*n+u_j];
             }
             free(proj_uv);
             if (u_j == 0 && double_gs == 0) {
                 u_j = v_i-1;
-                a_gs = u;
+                v_matrix = u;
                 double_gs = 1;
             }
         }
-        normalize(u, v_i, n);
+        // normalize the vector in g according to magnitude of a
+        double v_mag = vector_magn(u, v_i, n);
+        for (row=0; row<n; row++) {
+            g[row*n+v_i] = g[row*n+v_i] / v_mag;
+        }
+        normalize(v_mag, u, v_i, n);
     }
-    print_matrix(u, n, n);
 }
 
 void transpose(double *a, double **transposed_matrix, int n) {
@@ -58,8 +77,7 @@ void transpose(double *a, double **transposed_matrix, int n) {
     }
 }
 
-double *projection(double *a, double *u, int v_i, int u_j, int n) {
-    double dpsum = dot_product(a, u, v_i, u_j, n);
+double *projection(double dpsum, double *a, double *u, int v_i, int u_j, int n) {
     int row;
     double *proj = malloc(sizeof(double)*n);
     for (row=0; row<n; row++) {
@@ -77,9 +95,8 @@ double dot_product(double *a, double *b, int v1, int v2, int n) {
     return sum;
 }
 
-void normalize(double *u, int v, int n) {
+void normalize(double v_mag, double *u, int v, int n) {
     int row;
-    double v_mag = vector_magn(u, v, n);
     for (row=0; row<n; row++) {
         u[row*n+v] = u[row*n+v]/v_mag;
     }
@@ -93,7 +110,6 @@ double vector_magn(double *a, int v, int n) {
 
 void multiply(double *m1, double *m2, double **new_matrix, int n) {
     int new_row, new_column, old_x;
-    *new_matrix = (double*)malloc(sizeof(double)*n*n);
 
     for (new_row = 0; new_row < n; new_row++) {
         
@@ -117,15 +133,27 @@ void identity_matrix(double **m, int n) {
 }
 
 int main() {
-    int n = 3;
+    int n = 4;
     double *a = malloc(sizeof(double)*n*n);
     double *u, *b;
-    int i, j;
-    a[0] = a[6] = a[1] = a[7] = a[2] = a[5] = 1;
-    a[3] = -1;
-    a[4] = 0;
-    a[8] = 2;
-    print_matrix(a, n, n);
+    u = malloc(sizeof(double)*n*n);
+    b = malloc(sizeof(double)*n*n);
+    a[0] = 2.0;
+    a[1] = 2.0;
+    a[2] = 3.0;
+    a[3] = 4.0;
+    a[4] = 5.0;
+    a[5] = 6.0;
+    a[6] = 7.0;
+    a[7] = 8.0;
+    a[8] = 9.0;
+    a[9] = 0.0;
+    a[10] = 10.0;
+    a[11] = 2.0;
+    a[12] = 13.0;
+    a[13] = 3.0;
+    a[14] = 5.0;
+    a[15] = 2.0;
     inv_double_gs(a, n, u, b);    
     return 0;
 }
