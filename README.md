@@ -8,3 +8,5 @@ corresponds to one of the vectors).
 
 It then uses resulting matrix to find the inverse of the original input matrix. It returns both the
 inverse as well as the orthonormalized matrices.
+
+See the included HW1.pdf (it is just a page) for a clearer understanding of the function.
