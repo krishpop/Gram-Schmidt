@@ -74,7 +74,7 @@ void transpose(double *a, double **transposed_matrix, int n) {
     }
 }
 
-double *projection(double dpsum, double *a, double *u, int v_i, int u_j, int n) {
+double *projection(double dpsum, double *a, double *u, int v_i, int u_j, int n){
     int row;
     double *proj = malloc(sizeof(double)*n);
     for (row=0; row<n; row++) {
@@ -142,14 +142,19 @@ void print_matrix(double *m, int rows, int columns){
 
 int main() {
     double *a, *b, *u;
-    int n = 2;
+    int n = 3;
     a = (double*)malloc(sizeof(double)*n*n);
     b = (double*)malloc(sizeof(double)*n*n);
     u = (double*)malloc(sizeof(double)*n*n);
     a[0] = 1;
     a[1] = 1;
-    a[2] = 0;
-    a[3] = 4;
+    a[2] = 1;
+    a[3] = -1;
+    a[4] = 0;
+    a[5] = 1;
+    a[6] = 1;
+    a[7] = 1;
+    a[8] = 2;
     print_matrix(a, n, n);
     inv_double_gs(a, n, u, b);
     print_matrix(b, n, n);
